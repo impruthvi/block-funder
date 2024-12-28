@@ -76,6 +76,34 @@ contract CrowdFunding {
             campaign.amountCollected = campaign.amountCollected + amount;
         }
     }
-    function getDonators() public {}
-    function getCampaigns() public {}
+
+    /**
+     * @dev Returns the list of donators and their corresponding donation amounts for a specific campaign.
+     * @param _id The ID of the campaign.
+     * @return An array of addresses representing the donators and an array of uint256 representing the donation amounts.
+     */
+    function getDonators(
+        uint256 _id
+    ) public view returns (address[] memory, uint256[] memory) {
+        return (campaigns[_id].donators, campaigns[_id].donations);
+    }
+
+    /**
+     * @dev Returns an array of all campaigns.
+     * @return An array of Campaign structs representing all campaigns.
+     *
+     * This function creates a new memory array `allCampaigns` with a length equal to `numberOfCampaigns`.
+     * It then iterates over the `campaigns` mapping and assigns each campaign to the `allCampaigns` array.
+     */
+    function getCampaigns() public view returns (Campaign[] memory) {
+        Campaign[] memory allCampaigns = new Campaign[](numberOfCampaigns);
+
+        for (uint i = 0; i < numberOfCampaigns; i++) {
+            Campaign storage item = campaigns[i];
+
+            allCampaigns[i] = item;
+        }
+
+        return allCampaigns;
+    }
 }
