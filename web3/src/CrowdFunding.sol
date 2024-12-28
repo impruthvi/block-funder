@@ -197,9 +197,9 @@ contract CrowdFunding {
      * @notice Closes an active campaign.
      * @dev This function can only be called by the owner of the campaign.
      * @param _id The unique identifier of the campaign to be closed.
-     * @require The caller must be the owner of the campaign.
-     * @require The campaign must be active.
-     * @emit CampaignClosed Emits an event when the campaign is successfully closed.
+     * @dev The caller must be the owner of the campaign.
+     * @dev The campaign must be active.
+     * @dev Emits a CampaignClosed event when the campaign is successfully closed.
      */
     function closeCampaign(uint256 _id) public campaignExists(_id) {
         Campaign storage campaign = campaigns[_id];
