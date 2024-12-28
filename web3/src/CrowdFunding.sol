@@ -56,7 +56,26 @@ contract CrowdFunding {
         return numberOfCampaigns - 1;
     }
 
-    function donateToCampaign() public {}
+    /**
+     * @notice Allows a user to donate to a specific campaign.
+     * @dev The function accepts Ether and transfers it to the campaign owner.
+     *      It also updates the campaign's donators and donations arrays, and the total amount collected.
+     * @param _id The ID of the campaign to donate to.
+     */
+    function donateToCampaign(uint256 _id) public payable {
+        uint256 amount = msg.value;
+
+        Campaign storage campaign = campaigns[_id];
+
+        campaign.donators.push(msg.sender);
+        campaign.donations.push(amount);
+
+        (bool sent, ) = payable(campaign.owner).call{value: amount}("");
+
+        if (sent) {
+            campaign.amountCollected = campaign.amountCollected + amount;
+        }
+    }
     function getDonators() public {}
     function getCampaigns() public {}
 }
