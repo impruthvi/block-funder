@@ -12,23 +12,38 @@ contract CrowdFunding {
         string image;
         address[] donators;
         uint256[] donations;
+        bool isActive;
     }
 
     mapping(uint256 => Campaign) public campaigns;
-
     uint256 public numberOfCampaigns = 0;
 
-    /**
-     * @notice Creates a new crowdfunding campaign.
-     * @param _owner The address of the campaign owner.
-     * @param _title The title of the campaign.
-     * @param _description A brief description of the campaign.
-     * @param _target The funding target for the campaign in wei.
-     * @param _deadline The deadline for the campaign in Unix timestamp.
-     * @param _image A URL to an image representing the campaign.
-     * @return The ID of the newly created campaign.
-     * @dev The deadline must be a date in the future.
-     */
+    event CampaignCreated(
+        uint256 indexed campaignId,
+        address indexed owner,
+        uint256 target
+    );
+    event DonationReceived(
+        uint256 indexed campaignId,
+        address indexed donor,
+        uint256 amount
+    );
+    event CampaignClosed(uint256 indexed campaignId);
+
+    modifier campaignExists(uint256 _id) {
+        require(_id < numberOfCampaigns, "Campaign does not exist");
+        _;
+    }
+
+    modifier activeCampaign(uint256 _id) {
+        require(campaigns[_id].isActive, "Campaign is not active");
+        require(
+            block.timestamp <= campaigns[_id].deadline,
+            "Campaign has ended"
+        );
+        _;
+    }
+
     function createCampaign(
         address _owner,
         string memory _title,
@@ -37,12 +52,15 @@ contract CrowdFunding {
         uint256 _deadline,
         string memory _image
     ) public returns (uint256) {
-        Campaign storage campaign = campaigns[numberOfCampaigns];
-
+        require(_owner != address(0), "Invalid owner address");
+        require(bytes(_title).length > 0, "Title cannot be empty");
+        require(_target > 0, "Target amount must be greater than 0");
         require(
             _deadline > block.timestamp,
             "The deadline should be a date in the future"
         );
+
+        Campaign storage campaign = campaigns[numberOfCampaigns];
 
         campaign.owner = _owner;
         campaign.title = _title;
@@ -50,60 +68,67 @@ contract CrowdFunding {
         campaign.target = _target;
         campaign.deadline = _deadline;
         campaign.image = _image;
+        campaign.isActive = true;
+
+        emit CampaignCreated(numberOfCampaigns, _owner, _target);
 
         numberOfCampaigns++;
-
         return numberOfCampaigns - 1;
     }
 
-    /**
-     * @notice Allows a user to donate to a specific campaign.
-     * @dev The function accepts Ether and transfers it to the campaign owner.
-     *      It also updates the campaign's donators and donations arrays, and the total amount collected.
-     * @param _id The ID of the campaign to donate to.
-     */
-    function donateToCampaign(uint256 _id) public payable {
-        uint256 amount = msg.value;
+    function donateToCampaign(
+        uint256 _id
+    ) public payable campaignExists(_id) activeCampaign(_id) {
+        require(msg.value > 0, "Donation amount must be greater than 0");
 
         Campaign storage campaign = campaigns[_id];
 
         campaign.donators.push(msg.sender);
-        campaign.donations.push(amount);
+        campaign.donations.push(msg.value);
 
-        (bool sent, ) = payable(campaign.owner).call{value: amount}("");
+        (bool sent, ) = payable(campaign.owner).call{value: msg.value}("");
+        require(sent, "Failed to send Ether");
 
-        if (sent) {
-            campaign.amountCollected = campaign.amountCollected + amount;
+        campaign.amountCollected += msg.value;
+
+        if (campaign.amountCollected >= campaign.target) {
+            campaign.isActive = false;
+            emit CampaignClosed(_id);
         }
+
+        emit DonationReceived(_id, msg.sender, msg.value);
     }
 
-    /**
-     * @dev Returns the list of donators and their corresponding donation amounts for a specific campaign.
-     * @param _id The ID of the campaign.
-     * @return An array of addresses representing the donators and an array of uint256 representing the donation amounts.
-     */
     function getDonators(
         uint256 _id
-    ) public view returns (address[] memory, uint256[] memory) {
+    )
+        public
+        view
+        campaignExists(_id)
+        returns (address[] memory, uint256[] memory)
+    {
         return (campaigns[_id].donators, campaigns[_id].donations);
     }
 
-    /**
-     * @dev Returns an array of all campaigns.
-     * @return An array of Campaign structs representing all campaigns.
-     *
-     * This function creates a new memory array `allCampaigns` with a length equal to `numberOfCampaigns`.
-     * It then iterates over the `campaigns` mapping and assigns each campaign to the `allCampaigns` array.
-     */
     function getCampaigns() public view returns (Campaign[] memory) {
         Campaign[] memory allCampaigns = new Campaign[](numberOfCampaigns);
 
         for (uint i = 0; i < numberOfCampaigns; i++) {
-            Campaign storage item = campaigns[i];
-
-            allCampaigns[i] = item;
+            allCampaigns[i] = campaigns[i];
         }
 
         return allCampaigns;
+    }
+
+    function closeCampaign(uint256 _id) public campaignExists(_id) {
+        Campaign storage campaign = campaigns[_id];
+        require(
+            msg.sender == campaign.owner,
+            "Only campaign owner can close campaign"
+        );
+        require(campaign.isActive, "Campaign is already closed");
+
+        campaign.isActive = false;
+        emit CampaignClosed(_id);
     }
 }
