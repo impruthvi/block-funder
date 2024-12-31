@@ -9,12 +9,13 @@ import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { navlinks } from "@/constants";
 import { useConnectWalletModal } from "@/hooks/use-connet-wallet-modal";
+import { useAccount } from "wagmi";
 
 export const Navbar = () => {
-  const address = null;
   const router = useRouter();
   const pathname = usePathname();
   const { open } = useConnectWalletModal();
+  const { isConnected } = useAccount();
 
   const isLinkActive = (link: string): boolean => {
     if (link === "/") {
@@ -52,14 +53,17 @@ export const Navbar = () => {
       {/* Large screen navigation */}
       <div className="sm:flex hidden flex-row justify-end items-center gap-4">
         <Button
-          title={address ? "Create a campaign" : "Connect"}
+          title={isConnected ? "Create a campaign" : "Connect"}
           className={cn(
             "px-4 py-2 rounded-full font-medium text-white",
-            address ? "bg-[#1dc071]" : "bg-[#8c6dfd]"
+            isConnected ? "bg-[#1dc071]" : "bg-[#8c6dfd]"
           )}
-          onClick={open}
+          onClick={() => {
+            if (isConnected) router.push("/create-campaign");
+            else open();
+          }}
         >
-          {address ? "Create a campaign" : "Connect"}
+          {isConnected ? "Create a campaign" : "Connect"}
         </Button>
 
         <Link href="/profile">
@@ -139,14 +143,14 @@ export const Navbar = () => {
             <Button
               className={cn(
                 "w-full py-2 rounded-full text-white text-center",
-                address ? "bg-[#1dc071]" : "bg-[#8c6dfd]"
+                isConnected ? "bg-[#1dc071]" : "bg-[#8c6dfd]"
               )}
               onClick={() => {
-                if (address) router.push("/create-campaign");
+                if (isConnected) router.push("/create-campaign");
                 else open();
               }}
             >
-              {address ? "Create a campaign" : "Connect"}
+              {isConnected ? "Create a campaign" : "Connect"}
             </Button>
           </div>
         </div>
