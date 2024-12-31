@@ -8,11 +8,13 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { navlinks } from "@/constants";
+import { useConnectWalletModal } from "@/hooks/use-connet-wallet-modal";
 
 export const Navbar = () => {
   const address = null;
   const router = useRouter();
   const pathname = usePathname();
+  const { open } = useConnectWalletModal();
 
   const isLinkActive = (link: string): boolean => {
     if (link === "/") {
@@ -55,10 +57,7 @@ export const Navbar = () => {
             "px-4 py-2 rounded-full font-medium text-white",
             address ? "bg-[#1dc071]" : "bg-[#8c6dfd]"
           )}
-          onClick={() => {
-            if (address) router.push("/create-campaign");
-            else console.log("Connect wallet");
-          }}
+          onClick={open}
         >
           {address ? "Create a campaign" : "Connect"}
         </Button>
@@ -144,7 +143,7 @@ export const Navbar = () => {
               )}
               onClick={() => {
                 if (address) router.push("/create-campaign");
-                else console.log("Connect wallet");
+                else open();
               }}
             >
               {address ? "Create a campaign" : "Connect"}
