@@ -6,13 +6,13 @@ import Link from "next/link";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { navlinks } from "@/constants";
 import { useConnectWalletModal } from "@/hooks/use-connet-wallet-modal";
 import { useAccount } from "wagmi";
+import { redirect } from "next/navigation";
 
 export const Navbar = () => {
-  const router = useRouter();
   const pathname = usePathname();
   const { open } = useConnectWalletModal();
   const { isConnected } = useAccount();
@@ -59,7 +59,7 @@ export const Navbar = () => {
             isConnected ? "bg-[#1dc071]" : "bg-[#8c6dfd]"
           )}
           onClick={() => {
-            if (isConnected) router.push("/create-campaign");
+            if (isConnected) redirect("/create-campaign");
             else open();
           }}
         >
@@ -114,7 +114,7 @@ export const Navbar = () => {
                 }`}
                 onClick={() => {
                   setToggleDrawer(false);
-                  router.push(link.link);
+                  redirect(link.link);
                 }}
               >
                 <Image
@@ -146,7 +146,7 @@ export const Navbar = () => {
                 isConnected ? "bg-[#1dc071]" : "bg-[#8c6dfd]"
               )}
               onClick={() => {
-                if (isConnected) router.push("/create-campaign");
+                if (isConnected) redirect("/create-campaign");
                 else open();
               }}
             >
