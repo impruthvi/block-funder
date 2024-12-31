@@ -1,13 +1,21 @@
 "use client";
 
 import React from "react";
-import { WagmiProvider } from "wagmi";
+import { State, WagmiProvider } from "wagmi";
 import { config } from "@/config";
 
 interface WagmiProviderProps {
   children: React.ReactNode;
+  initialState: State | undefined;
 }
 
-export const WagmiCustomProvider = ({ children }: WagmiProviderProps) => {
-  return <WagmiProvider config={config}>{children}</WagmiProvider>;
+export const WagmiCustomProvider = ({
+  children,
+  initialState,
+}: WagmiProviderProps) => {
+  return (
+    <WagmiProvider config={config} initialState={initialState}>
+      {children}
+    </WagmiProvider>
+  );
 };
