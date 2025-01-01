@@ -1,8 +1,7 @@
 "use client";
-
 import React from "react";
 import { State, WagmiProvider } from "wagmi";
-import { config } from "@/config";
+import { config } from "@/lib/config";
 
 interface WagmiProviderProps {
   children: React.ReactNode;

@@ -1,17 +1,21 @@
-import { http, createConfig, cookieStorage, createStorage } from "wagmi";
-import { base, mainnet, seiDevnet } from "wagmi/chains";
+import { createClient } from "viem";
+import { http, createConfig, createStorage, cookieStorage } from "wagmi";
+import { sepolia } from "wagmi/chains";
 import { injected, metaMask } from "wagmi/connectors";
 
 export const config = createConfig({
-  chains: [mainnet, base, seiDevnet],
+  chains: [sepolia],
   connectors: [injected(), metaMask()],
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
   }),
   transports: {
-    [mainnet.id]: http(),
-    [base.id]: http(),
-    [seiDevnet.id]: http(),
+    [sepolia.id]: http(),
   },
+});
+
+export const client = createClient({
+  chain: sepolia,
+  transport: http(),
 });
