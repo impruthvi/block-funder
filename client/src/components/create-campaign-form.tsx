@@ -5,7 +5,6 @@ import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { CalendarIcon } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { writeContract } from "@wagmi/core";
 
 import { createCampaignSchema } from "@/schemas";
 
@@ -28,11 +27,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { config } from "@/lib/config";
-import { abi, CONTRACT_ADDRESS } from "@/lib/contract";
 import { useAccount } from "wagmi";
+import { useCreateCampaign } from "@/api/use-create-task";
 
 const CreateCampaignForm = () => {
+  const { mutate } = useCreateCampaign();
+
   const form = useForm<z.infer<typeof createCampaignSchema>>({
     resolver: zodResolver(createCampaignSchema),
   });
@@ -40,15 +40,20 @@ const CreateCampaignForm = () => {
   const { address } = useAccount();
 
   const onSubmit = async (data: z.infer<typeof createCampaignSchema>) => {
-    const { title, description, target, deadline, image } = data;
     try {
-      const result = await writeContract(config, {
-        abi,
-        address: CONTRACT_ADDRESS,
-        functionName: "createCampaign",
-        args: [address, title, description, target, deadline, image],
-      });
-      console.log(result);
+      mutate(
+        {
+          data: {
+            ...data,
+            address: address || "",
+          },
+        },
+        {
+          onSuccess: () => {
+            form.reset();
+          },
+        }
+      );
     } catch (error) {
       console.log("error", error);
     }

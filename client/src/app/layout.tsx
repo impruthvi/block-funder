@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Toaster } from "@/components/ui/sonner"
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { QueryProviders } from "@/components/query-provider";
@@ -37,7 +38,10 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <WagmiCustomProvider initialState={initialState}>
-          <QueryProviders>{children}</QueryProviders>
+          <QueryProviders>
+            {children}
+            <Toaster />
+            </QueryProviders>
         </WagmiCustomProvider>
       </body>
     </html>
