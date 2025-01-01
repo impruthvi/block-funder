@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const createCampaignSchema = z.object({
-  name: z.string().trim().min(1, "Required"),
   title: z.string().trim().min(1, "Required"),
   description: z.string().trim().min(1, "Required"),
   target: z

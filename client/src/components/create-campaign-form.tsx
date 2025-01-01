@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { CalendarIcon } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { writeContract } from "@wagmi/core";
 
 import { createCampaignSchema } from "@/schemas";
 
@@ -27,14 +28,30 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { config } from "@/lib/config";
+import { abi, CONTRACT_ADDRESS } from "@/lib/contract";
+import { useAccount } from "wagmi";
 
 const CreateCampaignForm = () => {
   const form = useForm<z.infer<typeof createCampaignSchema>>({
     resolver: zodResolver(createCampaignSchema),
   });
 
-  const onSubmit = (data: z.infer<typeof createCampaignSchema>) => {
-    console.log(data);
+  const { address } = useAccount();
+
+  const onSubmit = async (data: z.infer<typeof createCampaignSchema>) => {
+    const { title, description, target, deadline, image } = data;
+    try {
+      const result = await writeContract(config, {
+        abi,
+        address: CONTRACT_ADDRESS,
+        functionName: "createCampaign",
+        args: [address, title, description, target, deadline, image],
+      });
+      console.log(result);
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   return (
@@ -51,24 +68,6 @@ const CreateCampaignForm = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-200">Task Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Enter Task name"
-                        className="bg-gray-800 border-gray-700 text-gray-200 placeholder:text-gray-500 focus:ring-green-500 focus:border-green-500"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-400" />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="title"
