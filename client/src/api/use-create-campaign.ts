@@ -56,7 +56,7 @@ export const useCreateCampaign = () => {
       ]);
 
       if (!transactionHash) {
-        throw new Error("Failed to create task in smart contract");
+        throw new Error("Failed to create campaign in smart contract");
       }
 
       // Return the transaction hash as part of the ResponseType

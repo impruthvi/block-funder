@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useAccount } from "wagmi";
-import { useCreateCampaign } from "@/api/use-create-task";
+import { useCreateCampaign } from "@/api/use-create-campaign";
 
 const CreateCampaignForm = () => {
   const { mutate } = useCreateCampaign();
