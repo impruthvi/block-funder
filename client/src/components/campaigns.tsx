@@ -3,28 +3,16 @@
 import React from "react";
 import FundCard from "./fund-card";
 import { Loader2 } from "lucide-react";
-
-interface Campaign {
-  title: string;
-  description: string;
-  target: number;
-  deadline: number;
-  image: string;
-  amountCollected: number;
-  owner: string;
-}
-
+import { useGetCampaigns } from "@/api/use-get-all-campaign";
 interface CampaignsProps {
   title: string;
-  isLoading?: boolean;
-  campaigns: Campaign[];
 }
 
-const Campaigns = ({
-  title,
-  isLoading = false,
-  campaigns = [],
-}: CampaignsProps) => {
+const Campaigns = ({ title }: CampaignsProps) => {
+  const { data: campaigns, isLoading } = useGetCampaigns();
+
+  if(!campaigns) return null;
+
   const renderContent = () => {
     if (isLoading) {
       return (
