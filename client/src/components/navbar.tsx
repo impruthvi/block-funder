@@ -8,7 +8,7 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { navlinks } from "@/constants";
-import { useConnectWalletModal } from "@/hooks/use-connet-wallet-modal";
+import { useConnectWalletModal } from "@/hooks/use-connect-wallet-modal";
 import { useAccount } from "wagmi";
 import { redirect } from "next/navigation";
 
