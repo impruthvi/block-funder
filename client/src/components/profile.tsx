@@ -4,22 +4,16 @@ import { useAccount, useDisconnect } from "wagmi";
 
 import Campaigns from "./campaigns";
 import { Button } from "./ui/button";
+import { useGetCampaignsByOwner } from "@/api/use-get-campaign-by-owner";
 
-interface ProfileProps {
-  campaigns: {
-    title: string;
-    description: string;
-    target: number;
-    deadline: number;
-    image: string;
-    amountCollected: number;
-    owner: string;
-  }[];
-}
-
-const Profile = ({ campaigns }: ProfileProps) => {
+const Profile = () => {
   const { address, isConnecting, isDisconnected } = useAccount();
   const { disconnect } = useDisconnect();
+  const { data: campaigns, isLoading } = useGetCampaignsByOwner({
+    owner: address ?? "",
+  });
+
+  if (!campaigns) return null;
 
   if (isConnecting) {
     return (
@@ -62,10 +56,8 @@ const Profile = ({ campaigns }: ProfileProps) => {
 
       <Campaigns
         title="Your Campaigns"
-        isLoading={false}
-        campaigns={campaigns.filter(
-          (campaign) => campaign.owner.toLowerCase() === address?.toLowerCase()
-        )}
+        campaigns={campaigns}
+        isLoading={isLoading}
       />
     </div>
   );
