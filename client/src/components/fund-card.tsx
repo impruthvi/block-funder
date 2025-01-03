@@ -1,8 +1,16 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import { daysLeft } from "@/lib/utils";
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useRouter } from "next/navigation";
 
 interface FundCardProps {
   owner: string;
@@ -13,6 +21,7 @@ interface FundCardProps {
   amountCollected: bigint;
   image: string;
   category?: string;
+  slug: string;
 }
 
 const FundCard = ({
@@ -24,12 +33,20 @@ const FundCard = ({
   amountCollected,
   image,
   category = "Education",
+  slug,
 }: FundCardProps) => {
   const remainingDays = daysLeft(deadline);
   const progress = (Number(amountCollected) / Number(target)) * 100;
+  const router = useRouter();
+  const handleRedirect = () => {
+    router.push(`/${slug}`);
+  };
 
   return (
-    <Card className="w-full sm:w-72 bg-zinc-900 hover:bg-zinc-800 transition-colors duration-200 overflow-hidden">
+    <Card
+      className="w-full sm:w-72 bg-zinc-900 hover:bg-zinc-800 transition-colors duration-200 overflow-hidden cursor-pointer"
+      onClick={handleRedirect}
+    >
       <div className="relative h-40 w-full">
         <Image
           src={image}
@@ -52,18 +69,16 @@ const FundCard = ({
           />
           <span className="text-xs text-zinc-400">{category}</span>
         </div>
-        
+
         <h3 className="text-lg font-semibold text-white line-clamp-1">
           {title}
         </h3>
-        <p className="text-sm text-zinc-400 line-clamp-2">
-          {description}
-        </p>
+        <p className="text-sm text-zinc-400 line-clamp-2">{description}</p>
       </CardHeader>
 
       <CardContent className="p-4 pt-0 space-y-4">
         <Progress value={progress} className="h-2 bg-zinc-700" />
-        
+
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <p className="text-sm font-medium text-white">
@@ -74,12 +89,8 @@ const FundCard = ({
             </p>
           </div>
           <div className="space-y-1 text-right">
-            <p className="text-sm font-medium text-white">
-              {remainingDays}
-            </p>
-            <p className="text-xs text-zinc-400">
-              Days Left
-            </p>
+            <p className="text-sm font-medium text-white">{remainingDays}</p>
+            <p className="text-xs text-zinc-400">Days Left</p>
           </div>
         </div>
       </CardContent>

@@ -8,4 +8,7 @@ type Campaign = {
   owner: string;
   isActive: boolean;
   category?: string;
+  slug: string;
+  donators: string[];
+  donations: bigint[];
 };

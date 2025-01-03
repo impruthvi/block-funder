@@ -2,6 +2,7 @@ import { useReadContract } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 
 import { abi, CONTRACT_ADDRESS } from "@/lib/contract";
+import { titleToSlug } from "@/lib/utils";
 
 export const useGetCampaigns = () => {
 
@@ -27,6 +28,7 @@ export const useGetCampaigns = () => {
         amountCollected: campaign.amountCollected,
         image: campaign.image,
         isActive: campaign.isActive,
+        slug: titleToSlug(campaign.title),
       }));
     },
     enabled: !!data,
