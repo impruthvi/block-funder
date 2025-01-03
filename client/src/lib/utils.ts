@@ -13,3 +13,7 @@ export const daysLeft = (deadline: bigint) => {
   const remainingDays = Number((deadlineInMillis - today) / millisecondsInADay); // Calculate days and convert to number  
   return remainingDays;
 };
+
+export const titleToSlug = (title: string) => {
+  return title.toLowerCase().replace(/ /g, "-");
+}
