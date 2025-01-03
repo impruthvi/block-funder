@@ -8,9 +8,9 @@ interface FundCardProps {
   owner: string;
   title: string;
   description: string;
-  target: number;
-  deadline: number;
-  amountCollected: number;
+  target: bigint;
+  deadline: bigint;
+  amountCollected: bigint;
   image: string;
   category?: string;
 }
@@ -26,7 +26,7 @@ const FundCard = ({
   category = "Education",
 }: FundCardProps) => {
   const remainingDays = daysLeft(deadline);
-  const progress = (amountCollected / target) * 100;
+  const progress = (Number(amountCollected) / Number(target)) * 100;
 
   return (
     <Card className="w-full sm:w-72 bg-zinc-900 hover:bg-zinc-800 transition-colors duration-200 overflow-hidden">

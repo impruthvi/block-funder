@@ -125,7 +125,8 @@ const CreateCampaignForm = () => {
                         placeholder="Enter target amount"
                         className="bg-gray-800 border-gray-700 text-gray-200 placeholder:text-gray-500 focus:ring-green-500 focus:border-green-500"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        onChange={(e) => field.onChange(BigInt(e.target.value))}
+                        value={field.value ? field.value.toString() : ""}
                       />
                     </FormControl>
                     <FormMessage className="text-red-400" />

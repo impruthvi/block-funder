@@ -13,7 +13,7 @@ type RequestType = {
     address: string;
     title: string;
     description: string;
-    target: number;
+    target: bigint;
     deadline: Date;
     image?: string;
   };
@@ -24,8 +24,8 @@ const createCampaignOnChain = async (
     address: string,
     title: string,
     description: string,
-    target: number,
-    deadline: number,
+    target: bigint,
+    deadline: bigint,
     image?: string
   ]
 ) => {
@@ -44,7 +44,7 @@ export const useCreateCampaign = () => {
       const { address, title, description, target, deadline, image } = data;
 
       // transfer deadline to timestamp
-      const deadlineTimestamp = deadline.getTime() / 1000;
+      const deadlineTimestamp = BigInt(deadline.getTime() / 1000);
 
       const transactionHash = await createCampaignOnChain([
         address,

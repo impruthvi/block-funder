@@ -4,7 +4,7 @@ export const createCampaignSchema = z.object({
   title: z.string().trim().min(1, "Required"),
   description: z.string().trim().min(1, "Required"),
   target: z
-    .number()
+    .bigint()
     .refine((value) => value > 0, "Target must be greater than zero"), // Ensure positive value
   deadline: z
     .date()

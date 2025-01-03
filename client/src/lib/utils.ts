@@ -5,8 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const daysLeft = (deadline: number) => {
-  const today = new Date().getTime();
-  const remainingDays = Math.floor((deadline - today) / (1000 * 60 * 60 * 24));
+export const daysLeft = (deadline: bigint) => {
+  const today = BigInt(new Date().getTime()); // Convert today's timestamp to bigint
+  const deadlineInMillis = deadline * BigInt(1000); // Convert deadline to milliseconds
+  const millisecondsInADay = BigInt(1000 * 60 * 60 * 24); // Use bigint for calculations
+
+  const remainingDays = Number((deadlineInMillis - today) / millisecondsInADay); // Calculate days and convert to number  
   return remainingDays;
-}
+};

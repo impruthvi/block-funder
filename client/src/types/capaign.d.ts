@@ -1,10 +1,10 @@
 type Campaign = {
   title: string;
   description: string;
-  target: number;
-  deadline: number;
+  target: bigint;
+  deadline: bigint;
   image: string;
-  amountCollected: number;
+  amountCollected: bigint;
   owner: string;
   isActive: boolean;
   category?: string;
